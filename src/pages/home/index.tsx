@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
                 Our Commitment to Sustainability
               </h2>
               <p className="text-default-600 mb-6">
-                At BambooChic, we believe fashion and sustainability can go hand in hand.
+                At BambooMart, we believe fashion and sustainability can go hand in hand.
                 Our products are made from bamboo-derived fabrics and other eco-friendly
                 materials that reduce environmental impact without compromising on style
                 or comfort.
