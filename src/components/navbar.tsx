@@ -50,7 +50,25 @@ const AppNavbar: React.FC = () => {
       <NavbarBrand>
         <RouterLink to="/" className="flex items-center gap-2">
           <Icon icon="lucide:leaf" className="text-primary text-2xl" />
-          <p className="font-bold text-lg text-inherit">BambooMart</p>
+          <p className="font-bold text-lg text-inherit">
+            {/* MOBILE SHOW BM AND LARGER SHOW BambooMart */}
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="hidden md:block"
+            >
+              BambooMart
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="block md:hidden"
+            >
+              BM
+            </motion.span>
+          </p>
         </RouterLink>
       </NavbarBrand>
 
