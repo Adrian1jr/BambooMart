@@ -22,7 +22,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, columns = 4 }) => {
   };
 
   return (
-    <div className={`grid ${getGridCols()} gap-4 md:gap-6 w-full`}>
+    <div className={`grid ${getGridCols()} gap-6 w-full`}>
       {products.map(product => (
         <ProductCard key={product.id} product={product} />
       ))}

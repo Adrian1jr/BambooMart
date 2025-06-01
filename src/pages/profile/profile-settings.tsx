@@ -8,10 +8,25 @@ import {
   Switch, 
   Avatar,
   Card,
-  CardBody
+  CardBody,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  addToast
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useAuth } from '../../context/auth-context';
+
+interface FormErrors {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
 
 const ProfileSettings: React.FC = () => {
   const { user, updateProfile } = useAuth();
@@ -36,37 +51,150 @@ const ProfileSettings: React.FC = () => {
     productUpdates: true,
   });
   
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  
+  // Replace single isSubmitting state with separate states for each form
+  const [isSubmittingPersonalInfo, setIsSubmittingPersonalInfo] = useState(false);
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+  const [isSubmittingNotifications, setIsSubmittingNotifications] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  
   const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setPersonalInfo(prev => ({ ...prev, [name]: value }));
   };
   
-  const savePersonalInfo = () => {
-    updateProfile({
-      firstName: personalInfo.firstName,
-      lastName: personalInfo.lastName,
-    });
+  const validatePersonalInfo = (): boolean => {
+    const errors: FormErrors = {};
+    
+    if (!personalInfo.firstName.trim()) {
+      errors.firstName = "First name is required";
+    }
+    
+    if (!personalInfo.lastName.trim()) {
+      errors.lastName = "Last name is required";
+    }
+    
+    if (personalInfo.phone && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(personalInfo.phone)) {
+      errors.phone = "Please enter a valid phone number";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
   
-  const changePassword = () => {
-    // Password validation would go here
-    if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+  const savePersonalInfo = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent event propagation
+    
+    if (!validatePersonalInfo()) {
       return;
     }
     
-    if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters');
+    setIsSubmittingPersonalInfo(true);
+    
+    // Simulate API call - use just one toast notification
+    setTimeout(() => {
+      updateProfile({
+        firstName: personalInfo.firstName,
+        lastName: personalInfo.lastName,
+      });
+      
+      addToast({
+        title: "Profile updated",
+        description: "Your profile information has been updated successfully",
+        color: "success"
+      });
+      
+      setIsSubmittingPersonalInfo(false);
+    }, 1000);
+  };
+  
+  const validatePasswordChange = (): boolean => {
+    const errors: FormErrors = {};
+    
+    if (!currentPassword) {
+      errors.currentPassword = "Current password is required";
+    }
+    
+    if (!newPassword) {
+      errors.newPassword = "New password is required";
+    } else if (newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters";
+    }
+    
+    if (!confirmPassword) {
+      errors.confirmPassword = "Please confirm your new password";
+    } else if (newPassword !== confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const changePassword = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent event propagation
+    
+    if (!validatePasswordChange()) {
       return;
     }
     
-    // Success message
-    alert('Password changed successfully!');
+    setIsSubmittingPassword(true);
     
-    // Clear fields
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    // Simulate API call - use just one toast notification
+    setTimeout(() => {
+      // Success message
+      addToast({
+        title: "Password changed",
+        description: "Your password has been changed successfully",
+        color: "success"
+      });
+      
+      // Clear fields
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setIsSubmittingPassword(false);
+    }, 1000);
+  };
+  
+  const saveNotificationPreferences = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent event propagation
+    
+    setIsSubmittingNotifications(true);
+    
+    // Simulate API call - use just one toast notification
+    setTimeout(() => {
+      addToast({
+        title: "Preferences saved",
+        description: "Your notification preferences have been updated",
+        color: "success"
+      });
+      
+      setIsSubmittingNotifications(false);
+    }, 1000);
+  };
+  
+  const confirmDeleteAccount = () => {
+    setIsDeleteModalOpen(true);
+  };
+  
+  const handleDeleteAccount = () => {
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsDeleteModalOpen(false);
+      setIsSubmitting(false);
+      
+      addToast({
+        title: "Account deleted",
+        description: "Your account has been deleted successfully",
+        color: "danger"
+      });
+      
+      // In a real app, this would log the user out and redirect
+    }, 1500);
   };
   
   return (
@@ -97,6 +225,9 @@ const ProfileSettings: React.FC = () => {
                         placeholder="Enter your first name"
                         value={personalInfo.firstName}
                         onChange={handlePersonalInfoChange}
+                        isRequired
+                        isInvalid={!!formErrors.firstName}
+                        errorMessage={formErrors.firstName}
                       />
                       
                       <Input
@@ -105,6 +236,9 @@ const ProfileSettings: React.FC = () => {
                         placeholder="Enter your last name"
                         value={personalInfo.lastName}
                         onChange={handlePersonalInfoChange}
+                        isRequired
+                        isInvalid={!!formErrors.lastName}
+                        errorMessage={formErrors.lastName}
                       />
                     </div>
                     
@@ -123,6 +257,8 @@ const ProfileSettings: React.FC = () => {
                       placeholder="Enter your phone number"
                       value={personalInfo.phone}
                       onChange={handlePersonalInfoChange}
+                      isInvalid={!!formErrors.phone}
+                      errorMessage={formErrors.phone}
                     />
                     
                     <div>
@@ -138,7 +274,11 @@ const ProfileSettings: React.FC = () => {
                     </div>
                     
                     <div className="flex justify-end">
-                      <Button color="primary" onPress={savePersonalInfo}>
+                      <Button 
+                        color="primary" 
+                        onPress={(e) => savePersonalInfo(e)}
+                        isLoading={isSubmittingPersonalInfo}
+                      >
                         Save Changes
                       </Button>
                     </div>
@@ -158,6 +298,8 @@ const ProfileSettings: React.FC = () => {
                     type={passwordIsVisible ? "text" : "password"}
                     value={currentPassword}
                     onChange={e => setCurrentPassword(e.target.value)}
+                    isInvalid={!!formErrors.currentPassword}
+                    errorMessage={formErrors.currentPassword}
                     endContent={
                       <button type="button" onClick={() => setPasswordIsVisible(!passwordIsVisible)}>
                         {passwordIsVisible ? (
@@ -175,6 +317,8 @@ const ProfileSettings: React.FC = () => {
                     type={passwordIsVisible ? "text" : "password"}
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
+                    isInvalid={!!formErrors.newPassword}
+                    errorMessage={formErrors.newPassword}
                     endContent={
                       <button type="button" onClick={() => setPasswordIsVisible(!passwordIsVisible)}>
                         {passwordIsVisible ? (
@@ -192,6 +336,8 @@ const ProfileSettings: React.FC = () => {
                     type={passwordIsVisible ? "text" : "password"}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
+                    isInvalid={!!formErrors.confirmPassword}
+                    errorMessage={formErrors.confirmPassword}
                     endContent={
                       <button type="button" onClick={() => setPasswordIsVisible(!passwordIsVisible)}>
                         {passwordIsVisible ? (
@@ -204,7 +350,11 @@ const ProfileSettings: React.FC = () => {
                   />
                   
                   <div className="flex justify-end">
-                    <Button color="primary" onPress={changePassword}>
+                    <Button 
+                      color="primary" 
+                      onPress={(e) => changePassword(e)}
+                      isLoading={isSubmittingPassword}
+                    >
                       Update Password
                     </Button>
                   </div>
@@ -282,7 +432,11 @@ const ProfileSettings: React.FC = () => {
                   <Divider />
                   
                   <div className="flex justify-end">
-                    <Button color="primary">
+                    <Button 
+                      color="primary"
+                      onPress={(e) => saveNotificationPreferences(e)}
+                      isLoading={isSubmittingNotifications}
+                    >
                       Save Preferences
                     </Button>
                   </div>
@@ -302,7 +456,11 @@ const ProfileSettings: React.FC = () => {
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
                 
-                <Button color="danger" variant="flat">
+                <Button 
+                  color="danger" 
+                  variant="flat"
+                  onPress={confirmDeleteAccount}
+                >
                   Delete Account
                 </Button>
               </CardBody>
@@ -310,6 +468,38 @@ const ProfileSettings: React.FC = () => {
           </div>
         </Tab>
       </Tabs>
+      
+      {/* Delete Account Confirmation Modal */}
+      <Modal isOpen={isDeleteModalOpen} onOpenChange={() => setIsDeleteModalOpen(false)}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="text-danger">Delete Account</ModalHeader>
+              <ModalBody>
+                <div className="flex flex-col items-center justify-center py-4">
+                  <Icon icon="lucide:alert-triangle" className="text-danger text-5xl mb-4" />
+                  <h3 className="text-xl font-bold mb-2">Are you absolutely sure?</h3>
+                  <p className="text-center text-default-600">
+                    This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                  </p>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button 
+                  color="danger" 
+                  onPress={handleDeleteAccount}
+                  isLoading={isSubmitting}
+                >
+                  Delete Account
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

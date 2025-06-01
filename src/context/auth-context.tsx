@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { addToast } from "@heroui/react";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { addToast } from '@heroui/react';
 
 interface User {
   id: string;
@@ -14,12 +14,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string
-  ) => Promise<boolean>;
+  register: (firstName: string, lastName: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => void;
 }
@@ -32,7 +27,7 @@ const MOCK_USER: User = {
   firstName: "Jane",
   lastName: "Doe",
   email: "jane.doe@example.com",
-  avatar: "avatar?w=200&h=200&u=1",
+  avatar: "avatar?w=200&h=200&u=1"
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -41,41 +36,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for user data in localStorage
-    const storedUser = localStorage.getItem("BambooMart_user");
+    const storedUser = localStorage.getItem('bamboomart_user');  // Changed from 'bamboochic_user'
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-
+    
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-
+    
     // Simulate API call
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         // Simple validation for demo purposes
-        if (email && password.length >= 6) {
+        if (email && password) { // Removed length validation to match form validation
           // For demo purposes, always log in with mock user
           setUser(MOCK_USER);
-          localStorage.setItem("BambooMart_user", JSON.stringify(MOCK_USER));
-
+          localStorage.setItem('bamboomart_user', JSON.stringify(MOCK_USER));  // Changed from 'bamboochic_user'
+          
           addToast({
             title: "Login successful",
             description: `Welcome back, ${MOCK_USER.firstName}!`,
-            color: "success",
+            color: "success"
           });
-
+          
           setIsLoading(false);
           resolve(true);
         } else {
           addToast({
             title: "Login failed",
             description: "Invalid email or password",
-            color: "danger",
+            color: "danger"
           });
-
+          
           setIsLoading(false);
           resolve(false);
         }
@@ -84,15 +79,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (
-    firstName: string,
-    lastName: string,
-    email: string,
+    firstName: string, 
+    lastName: string, 
+    email: string, 
     password: string
   ): Promise<boolean> => {
     setIsLoading(true);
-
+    
     // Simulate API call
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         // Simple validation for demo purposes
         if (firstName && lastName && email && password.length >= 6) {
@@ -101,27 +96,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             firstName,
             lastName,
             email,
-            avatar: "avatar?w=200&h=200&u=1",
+            avatar: "avatar?w=200&h=200&u=1"
           };
-
+          
           setUser(newUser);
-          localStorage.setItem("BambooMart_user", JSON.stringify(newUser));
-
+          localStorage.setItem('bamboomart_user', JSON.stringify(newUser));  // Changed from 'bamboochic_user'
+          
           addToast({
             title: "Registration successful",
-            description: `Welcome to BambooMart, ${firstName}!`,
-            color: "success",
+            description: `Welcome to BambooMart, ${firstName}!`,  // Changed from BambooChic
+            color: "success"
           });
-
+          
           setIsLoading(false);
           resolve(true);
         } else {
           addToast({
             title: "Registration failed",
             description: "Please fill in all fields correctly",
-            color: "danger",
+            color: "danger"
           });
-
+          
           setIsLoading(false);
           resolve(false);
         }
@@ -131,11 +126,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("BambooMart_user");
+    localStorage.removeItem('bamboomart_user');  // Changed from 'bamboochic_user'
     addToast({
       title: "Logged out",
       description: "You have been successfully logged out",
-      color: "default",
+      color: "default"
     });
   };
 
@@ -143,12 +138,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       const updatedUser = { ...user, ...updates };
       setUser(updatedUser);
-      localStorage.setItem("BambooMart_user", JSON.stringify(updatedUser));
-
+      localStorage.setItem('bamboomart_user', JSON.stringify(updatedUser));  // Changed from 'bamboochic_user'
+      
       addToast({
         title: "Profile updated",
         description: "Your profile has been updated successfully",
-        color: "success",
+        color: "success"
       });
     }
   };
@@ -162,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        updateProfile,
+        updateProfile
       }}
     >
       {children}
@@ -173,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

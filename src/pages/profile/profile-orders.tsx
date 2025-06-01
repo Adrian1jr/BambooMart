@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Button, 
+  Table, 
+  TableHeader, 
+  TableColumn, 
+  TableBody, 
+  TableRow, 
+  TableCell, 
   Input, 
-  Dropdown, 
-  DropdownTrigger, 
-  DropdownMenu, 
-  DropdownItem,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell
+  Select, 
+  SelectItem 
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 
@@ -25,22 +23,22 @@ interface Order {
 }
 
 const ProfileOrders: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Mock orders data
   const allOrders: Order[] = [
-    { id: 'BCC-123456', date: '2023-06-15', status: 'Delivered', total: 149.97, items: 3 },
-    { id: 'BCC-123457', date: '2023-05-22', status: 'Processing', total: 79.99, items: 1 },
-    { id: 'BCC-123458', date: '2023-04-10', status: 'Delivered', total: 56.98, items: 2 },
-    { id: 'BCC-123459', date: '2023-03-18', status: 'Cancelled', total: 89.99, items: 1 },
-    { id: 'BCC-123460', date: '2023-02-05', status: 'Delivered', total: 129.98, items: 2 },
-    { id: 'BCC-123461', date: '2023-01-12', status: 'Delivered', total: 45.99, items: 1 }
+    { id: 'BMM-123456', date: '2023-06-15', status: 'Delivered', total: 149.97, items: 3 },
+    { id: 'BMM-123457', date: '2023-05-22', status: 'Processing', total: 79.99, items: 1 },
+    { id: 'BMM-123458', date: '2023-04-09', status: 'Delivered', total: 56.98, items: 2 },
+    { id: 'BMM-123459', date: '2023-03-17', status: 'Cancelled', total: 89.99, items: 1 },
+    { id: 'BMM-123460', date: '2023-02-04', status: 'Delivered', total: 129.98, items: 4 },
+    { id: 'BMM-123461', date: '2023-01-11', status: 'Delivered', total: 45.99, items: 1 }
   ];
   
   const filteredOrders = allOrders
     .filter(order => {
-      if (statusFilter && order.status !== statusFilter) return false;
+      if (filterStatus !== "all" && order.status !== filterStatus) return false;
       if (searchQuery) {
         return order.id.toLowerCase().includes(searchQuery.toLowerCase());
       }
@@ -64,123 +62,78 @@ const ProfileOrders: React.FC = () => {
 
   return (
     <div className="p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <h2 className="text-xl font-semibold">Order History</h2>
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <Input
-            placeholder="Search by order ID"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            startContent={<Icon icon="lucide:search" className="text-default-400" />}
-            className="w-full sm:w-64"
-          />
-          <Dropdown>
-            <DropdownTrigger>
-              <Button 
-                variant="flat" 
-                endContent={<Icon icon="lucide:chevron-down" />}
-              >
-                {statusFilter || "All Statuses"}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              selectedKeys={statusFilter ? [statusFilter] : []}
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0]?.toString() || null;
-                setStatusFilter(selected);
-              }}
-              selectionMode="single"
-            >
-              <DropdownItem key="all" textValue="All">All Statuses</DropdownItem>
-              <DropdownItem key="Delivered">Delivered</DropdownItem>
-              <DropdownItem key="Processing">Processing</DropdownItem>
-              <DropdownItem key="Shipped">Shipped</DropdownItem>
-              <DropdownItem key="Cancelled">Cancelled</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
+      <h1 className="text-2xl font-bold mb-6">My Orders</h1>
+      
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <Input
+          placeholder="Search by order ID"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          startContent={<Icon icon="lucide:search" className="text-default-400" />}
+          className="w-full sm:w-64"
+        />
+        <Select
+          label="Filter by status"
+          selectedKeys={[filterStatus]}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          variant="flat"
+          className="w-full sm:w-64"
+          classNames={{
+            trigger: "h-10",
+            value: "text-small"
+          }}
+        >
+          <SelectItem key="all" value="all">All Statuses</SelectItem>
+          <SelectItem key="Delivered" value="Delivered">Delivered</SelectItem>
+          <SelectItem key="Processing" value="Processing">Processing</SelectItem>
+          <SelectItem key="Shipped" value="Shipped">Shipped</SelectItem>
+          <SelectItem key="Cancelled" value="Cancelled">Cancelled</SelectItem>
+        </Select>
       </div>
       
-      {filteredOrders.length > 0 ? (
-        <Table removeWrapper aria-label="Orders history table">
-          <TableHeader>
-            <TableColumn>ORDER #</TableColumn>
-            <TableColumn>DATE</TableColumn>
-            <TableColumn>STATUS</TableColumn>
-            <TableColumn>ITEMS</TableColumn>
-            <TableColumn>TOTAL</TableColumn>
-            <TableColumn>ACTIONS</TableColumn>
-          </TableHeader>
-          <TableBody>
-            {filteredOrders.map(order => (
+      <Table 
+        aria-label="Orders history" 
+        removeWrapper
+        shadow="none"
+        classNames={{
+          base: "border border-divider rounded-medium overflow-hidden"
+        }}
+      >
+        <TableHeader>
+          <TableColumn>ORDER #</TableColumn>
+          <TableColumn>DATE</TableColumn>
+          <TableColumn>STATUS</TableColumn>
+          <TableColumn>ITEMS</TableColumn>
+          <TableColumn>TOTAL</TableColumn>
+        </TableHeader>
+        <TableBody>
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map(order => (
               <TableRow key={order.id}>
+                <TableCell>{order.id}</TableCell>
+                <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <span className="font-medium">{order.id}</span>
-                </TableCell>
-                <TableCell>
-                  {new Date(order.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
+                  <span 
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+                  >
                     {order.status}
                   </span>
                 </TableCell>
-                <TableCell>
-                  {order.items}
-                </TableCell>
-                <TableCell className="font-medium">
-                  ${order.total.toFixed(2)}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button 
-                      as={Link} 
-                      to={`/profile/orders/${order.id}`}
-                      size="sm" 
-                      variant="flat" 
-                    >
-                      View
-                    </Button>
-                    {order.status === 'Delivered' && (
-                      <Button size="sm" variant="flat" startContent={<Icon icon="lucide:repeat" />}>
-                        Reorder
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
+                <TableCell>{order.items}</TableCell>
+                <TableCell>${order.total.toFixed(2)}</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      ) : (
-        <div className="text-center py-12">
-          <Icon icon="lucide:package-x" className="text-default-300 text-4xl mx-auto mb-3" />
-          <p className="text-default-600">No orders found matching your criteria.</p>
-          {!!searchQuery || statusFilter ? (
-            <Button 
-              variant="flat"
-              className="mt-4"
-              onPress={() => {
-                setSearchQuery('');
-                setStatusFilter(null);
-              }}
-            >
-              Clear Filters
-            </Button>
+            ))
           ) : (
-            <Button 
-              as={Link}
-              to="/categories"
-              color="primary"
-              variant="flat"
-              className="mt-4"
-            >
-              Start Shopping
-            </Button>
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-8">
+                {searchQuery || filterStatus !== "all" 
+                  ? "No orders match your filters"
+                  : "You haven't placed any orders yet"}
+              </TableCell>
+            </TableRow>
           )}
-        </div>
-      )}
+        </TableBody>
+      </Table>
     </div>
   );
 };

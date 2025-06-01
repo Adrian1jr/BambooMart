@@ -13,6 +13,7 @@ export interface Product {
   new?: boolean;
   sale?: boolean;
   salePrice?: number;
+  images?: string[];
 }
 
 export const products: Product[] = [
@@ -27,7 +28,13 @@ export const products: Product[] = [
     sizes: ["XS", "S", "M", "L", "XL"],
     rating: 4.8,
     reviews: 124,
-    featured: true
+    featured: true,
+    images: [
+      "clothing?w=600&h=800&u=1",
+      "clothing?w=600&h=800&u=1a",
+      "clothing?w=600&h=800&u=1b",
+      "clothing?w=600&h=800&u=1c"
+    ]
   },
   {
     id: 2,
@@ -41,7 +48,13 @@ export const products: Product[] = [
     rating: 4.9,
     reviews: 86,
     featured: true,
-    new: true
+    new: true,
+    images: [
+      "clothing?w=600&h=800&u=2",
+      "clothing?w=600&h=800&u=2a",
+      "clothing?w=600&h=800&u=2b",
+      "clothing?w=600&h=800&u=2c"
+    ]
   },
   {
     id: 3,
@@ -53,7 +66,13 @@ export const products: Product[] = [
     colors: ["Blue", "Black", "Light Blue"],
     sizes: ["28", "30", "32", "34", "36", "38"],
     rating: 4.6,
-    reviews: 58
+    reviews: 58,
+    images: [
+      "clothing?w=600&h=800&u=3",
+      "clothing?w=600&h=800&u=3a",
+      "clothing?w=600&h=800&u=3b",
+      "clothing?w=600&h=800&u=3c"
+    ]
   },
   {
     id: 4,
@@ -66,7 +85,13 @@ export const products: Product[] = [
     sizes: ["XS", "S", "M", "L", "XL"],
     rating: 4.7,
     reviews: 42,
-    new: true
+    new: true,
+    images: [
+      "clothing?w=600&h=800&u=4",
+      "clothing?w=600&h=800&u=4a",
+      "clothing?w=600&h=800&u=4b",
+      "clothing?w=600&h=800&u=4c"
+    ]
   },
   {
     id: 5,
@@ -79,7 +104,13 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     rating: 4.9,
     reviews: 37,
-    featured: true
+    featured: true,
+    images: [
+      "clothing?w=600&h=800&u=5",
+      "clothing?w=600&h=800&u=5a",
+      "clothing?w=600&h=800&u=5b",
+      "clothing?w=600&h=800&u=5c"
+    ]
   },
   {
     id: 6,
@@ -91,7 +122,13 @@ export const products: Product[] = [
     colors: ["White", "Light Blue", "Striped"],
     sizes: ["S", "M", "L", "XL", "XXL"],
     rating: 4.5,
-    reviews: 63
+    reviews: 63,
+    images: [
+      "clothing?w=600&h=800&u=6",
+      "clothing?w=600&h=800&u=6a",
+      "clothing?w=600&h=800&u=6b",
+      "clothing?w=600&h=800&u=6c"
+    ]
   },
   {
     id: 7,
@@ -304,6 +341,64 @@ export const products: Product[] = [
     reviews: 45,
     sale: true,
     salePrice: 49.99
+  },
+  {
+    id: 23,
+    name: "Bamboo Silk Sleep Mask",
+    price: 24.99,
+    description: "Luxuriously soft sleep mask made from our signature bamboo silk fabric. Helps block light completely while feeling weightless on your face. Perfect for travel or getting quality rest at home.",
+    category: "accessories",
+    image: "clothing?w=600&h=900&u=2323",
+    colors: ["Black", "Navy", "Blush"],
+    sizes: ["One Size"],
+    rating: 4.9,
+    reviews: 62,
+    new: true,
+    images: [
+      "clothing?w=600&h=900&u=2323",
+      "clothing?w=600&h=900&u=2323a",
+      "clothing?w=600&h=900&u=2323b",
+      "clothing?w=600&h=900&u=2323c"
+    ]
+  },
+  {
+    id: 24,
+    name: "Recycled Denim Backpack",
+    price: 89.99,
+    description: "Stylish backpack crafted from recycled denim with bamboo fiber lining. Features multiple compartments including a padded laptop sleeve. Water-resistant and durable for daily use.",
+    category: "accessories",
+    image: "clothing?w=600&h=900&u=2424",
+    colors: ["Denim Blue", "Black Denim", "Light Wash"],
+    sizes: ["One Size"],
+    rating: 4.7,
+    reviews: 28,
+    sale: true,
+    salePrice: 69.99,
+    images: [
+      "clothing?w=600&h=900&u=2424",
+      "clothing?w=600&h=900&u=2424a",
+      "clothing?w=600&h=900&u=2424b",
+      "clothing?w=600&h=900&u=2424c"
+    ]
+  },
+  {
+    id: 25,
+    name: "Bamboo Blend Activewear Set",
+    price: 119.99,
+    description: "Complete activewear set made from our performance bamboo blend. Includes a moisture-wicking top and high-waisted leggings with 4-way stretch. Perfect for yoga, running, or high-intensity workouts.",
+    category: "activewear",
+    image: "clothing?w=600&h=900&u=2525",
+    colors: ["Black", "Olive", "Burgundy"],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    rating: 4.8,
+    reviews: 47,
+    featured: true,
+    images: [
+      "clothing?w=600&h=900&u=2525",
+      "clothing?w=600&h=900&u=2525a",
+      "clothing?w=600&h=900&u=2525b",
+      "clothing?w=600&h=900&u=2525c"
+    ]
   }
 ];
 
@@ -318,19 +413,22 @@ export const getRelatedProducts = (product: Product, limit = 4): Product[] => {
 };
 
 export const getFeaturedProducts = (limit = 8): Product[] => {
+  // Only return products that are explicitly marked as featured
   return products
-    .filter(product => product.featured || Math.random() > 0.5) // Ensure we get enough products
+    .filter(product => product.featured)
     .slice(0, limit);
 };
 
 export const getNewArrivals = (limit = 8): Product[] => {
+  // Only return products that are explicitly marked as new
   return products
-    .filter(product => product.new || Math.random() > 0.5) // Ensure we get enough products
+    .filter(product => product.new)
     .slice(0, limit);
 };
 
 export const getSaleProducts = (limit = 8): Product[] => {
+  // Only return products that are explicitly marked as on sale
   return products
-    .filter(product => product.sale || Math.random() > 0.5) // Ensure we get enough products
+    .filter(product => product.sale)
     .slice(0, limit);
 };

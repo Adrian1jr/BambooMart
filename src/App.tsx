@@ -31,6 +31,7 @@ import AuthModalProvider from './components/auth/auth-modal-provider';
 import ScrollToTop from './components/scroll-to-top';
 import SearchCommandMenu from './components/search-command-menu';
 import { SearchProvider } from './context/search-context';
+import OrderDetailPage from './pages/profile/order-detail';
 
 const App: React.FC = () => {
   return (
@@ -66,8 +67,12 @@ const App: React.FC = () => {
                 <Route path="/terms-of-service" component={TermsOfServicePage} />
                 <Route path="/accessibility" component={AccessibilityPage} />
                 
-                {/* Account Pages */}
-                <Route path="/profile" component={ProfilePage} />
+                {/* Profile Pages */}
+                <Route exact path="/profile" component={ProfilePage} />
+                <Route path="/profile/orders" component={ProfilePage} />
+                <Route path="/profile/orders/:orderId" component={OrderDetailPage} />
+                <Route path="/profile/addresses" component={ProfilePage} />
+                <Route path="/profile/settings" component={ProfilePage} />
               </Switch>
             </Layout>
           </SearchProvider>

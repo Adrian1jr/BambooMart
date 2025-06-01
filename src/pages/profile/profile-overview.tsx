@@ -1,112 +1,102 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Avatar, Button, Card, CardBody, Divider } from '@heroui/react';
+import { 
+  Card, 
+  CardBody, 
+  Button,
+  Avatar
+} from '@heroui/react';
 import { Icon } from '@iconify/react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/auth-context';
 
 const ProfileOverview: React.FC = () => {
   const { user } = useAuth();
-
-  // Mock order data
+  
+  // Mock data
   const recentOrders = [
-    { 
-      id: 'BCC-123456', 
-      date: '2023-06-15', 
-      status: 'Delivered', 
-      total: 149.97, 
-      items: 3 
-    },
-    { 
-      id: 'BCC-123457', 
-      date: '2023-05-22', 
-      status: 'Processing', 
-      total: 79.99, 
-      items: 1 
+    { id: 'BMM-123456', date: '2023-06-15', status: 'Delivered', total: 149.97 },
+    { id: 'BMM-123457', date: '2023-05-22', status: 'Processing', total: 79.99 },
+  ];
+  
+  const savedAddresses = [
+    {
+      id: '1',
+      name: 'John Doe',
+      street: '123 Main Street',
+      apartment: 'Apt 4B',
+      city: 'New York',
+      state: 'NY',
+      zipCode: '10001',
+      isDefault: true
     }
   ];
-
+  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Delivered':
+        return 'bg-success-100 text-success-500';
+      case 'Processing':
+        return 'bg-primary-100 text-primary-500';
+      case 'Shipped':
+        return 'bg-warning-100 text-warning-500';
+      case 'Cancelled':
+        return 'bg-danger-100 text-danger-500';
+      default:
+        return 'bg-default-100 text-default-500';
+    }
+  };
+  
   return (
     <div className="p-6">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <motion.div 
+          className="md:col-span-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <Card>
             <CardBody className="p-6">
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col md:flex-row items-center gap-6">
                 <Avatar
                   src={`https://img.heroui.chat/image/${user?.avatar || "avatar?w=200&h=200&u=1"}`}
                   className="w-24 h-24"
                 />
-                <h2 className="text-xl font-semibold mt-4">{user?.firstName} {user?.lastName}</h2>
-                <p className="text-default-500 mb-4">{user?.email}</p>
-                <Button 
-                  as={Link}
-                  to="/profile/settings"
-                  variant="flat" 
-                  color="primary" 
-                  startContent={<Icon icon="lucide:edit" />}
-                >
-                  Edit Profile
-                </Button>
-              </div>
-              
-              <Divider className="my-6" />
-              
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-default-600">Member Since:</span>
-                  <span className="font-medium">June 2023</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-default-600">Total Orders:</span>
-                  <span className="font-medium">7</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-default-600">Total Spent:</span>
-                  <span className="font-medium">$487.93</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-default-600">Reward Points:</span>
-                  <span className="font-medium text-primary">240 points</span>
+                <div>
+                  <h2 className="text-2xl font-bold">{user?.firstName} {user?.lastName}</h2>
+                  <p className="text-default-500">{user?.email}</p>
+                  <div className="flex gap-3 mt-3">
+                    <Button 
+                      as={Link}
+                      to="/profile/settings"
+                      variant="flat"
+                      size="sm"
+                      startContent={<Icon icon="lucide:settings" />}
+                    >
+                      Edit Profile
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardBody>
           </Card>
-          
-          <Card className="mt-6">
-            <CardBody className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <div className="space-y-3">
-                <Link to="/favorites" className="flex items-center gap-2 text-default-600 hover:text-primary">
-                  <Icon icon="lucide:heart" />
-                  <span>My Wishlist</span>
-                </Link>
-                <Link to="/profile/orders" className="flex items-center gap-2 text-default-600 hover:text-primary">
-                  <Icon icon="lucide:package" />
-                  <span>Track Orders</span>
-                </Link>
-                <Link to="/profile/addresses" className="flex items-center gap-2 text-default-600 hover:text-primary">
-                  <Icon icon="lucide:map-pin" />
-                  <span>Manage Addresses</span>
-                </Link>
-                <Link to="/profile/settings" className="flex items-center gap-2 text-default-600 hover:text-primary">
-                  <Icon icon="lucide:settings" />
-                  <span>Account Settings</span>
-                </Link>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
+        </motion.div>
         
-        <div className="md:w-2/3">
-          <Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <Card className="h-full">
             <CardBody className="p-6">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Recent Orders</h3>
                 <Button 
                   as={Link}
                   to="/profile/orders"
-                  variant="light" 
-                  endContent={<Icon icon="lucide:arrow-right" />}
+                  variant="light"
+                  size="sm"
                 >
                   View All
                 </Button>
@@ -115,115 +105,137 @@ const ProfileOverview: React.FC = () => {
               {recentOrders.length > 0 ? (
                 <div className="space-y-4">
                   {recentOrders.map(order => (
-                    <div key={order.id} className="bg-content2 p-4 rounded-lg">
-                      <div className="flex flex-col md:flex-row justify-between mb-2">
-                        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
-                          <span className="font-medium">Order #{order.id}</span>
-                          <span className="text-sm text-default-500">
-                            {new Date(order.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className={`inline-block px-3 py-1 rounded-full text-xs ${
-                          order.status === 'Delivered' 
-                            ? 'bg-success-100 text-success-500' 
-                            : 'bg-primary-100 text-primary-500'
-                        }`}>
+                    <div key={order.id} className="border border-divider rounded-lg p-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">{order.id}</span>
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}`}>
                           {order.status}
-                        </div>
+                        </span>
                       </div>
-                      
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
-                        <div className="text-default-600 text-sm">
-                          {order.items} {order.items === 1 ? 'item' : 'items'}
-                        </div>
-                        <div className="flex gap-4 items-center mt-2 md:mt-0">
-                          <span className="font-medium">${order.total.toFixed(2)}</span>
-                          <Button 
-                            as={Link} 
-                            to={`/profile/orders/${order.id}`}
-                            size="sm" 
-                            variant="flat" 
-                            color="primary"
-                          >
-                            Details
-                          </Button>
-                        </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-default-500">{new Date(order.date).toLocaleDateString()}</span>
+                        <span className="font-medium">${order.total.toFixed(2)}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Icon icon="lucide:package" className="text-default-300 text-4xl mx-auto mb-3" />
-                  <p className="text-default-600">You haven't placed any orders yet.</p>
+                <div className="text-center py-6">
+                  <Icon icon="lucide:package" className="text-default-300 text-3xl mx-auto mb-2" />
+                  <p className="text-default-500">No recent orders</p>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          className="md:col-span-2"
+        >
+          <Card className="h-full">
+            <CardBody className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Default Address</h3>
+                <Button 
+                  as={Link}
+                  to="/profile/addresses"
+                  variant="light"
+                  size="sm"
+                >
+                  Manage Addresses
+                </Button>
+              </div>
+              
+              {savedAddresses.length > 0 ? (
+                <div className="border border-divider rounded-lg p-4">
+                  <h4 className="font-medium mb-1">{savedAddresses[0].name}</h4>
+                  <address className="not-italic text-default-600">
+                    {savedAddresses[0].street}<br />
+                    {savedAddresses[0].apartment && <>{savedAddresses[0].apartment}<br /></>}
+                    {savedAddresses[0].city}, {savedAddresses[0].state} {savedAddresses[0].zipCode}
+                  </address>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Icon icon="lucide:map-pin-off" className="text-default-300 text-3xl mx-auto mb-2" />
+                  <p className="text-default-500">No addresses saved</p>
                   <Button 
                     as={Link}
-                    to="/categories"
+                    to="/profile/addresses"
                     color="primary"
                     variant="flat"
-                    className="mt-4"
+                    size="sm"
+                    className="mt-2"
                   >
-                    Start Shopping
+                    Add Address
                   </Button>
                 </div>
               )}
             </CardBody>
           </Card>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <Card>
-              <CardBody className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Default Shipping Address</h3>
-                  <Button 
-                    as={Link}
-                    to="/profile/addresses"
-                    variant="light" 
-                    size="sm"
-                    startContent={<Icon icon="lucide:edit" />}
-                  >
-                    Edit
-                  </Button>
-                </div>
-                
-                <address className="not-italic text-default-600">
-                  John Doe<br />
-                  123 Main Street<br />
-                  Apt 4B<br />
-                  New York, NY 10001<br />
-                  United States<br />
-                  (555) 123-4567
-                </address>
-              </CardBody>
-            </Card>
-            
-            <Card>
-              <CardBody className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Default Payment Method</h3>
-                  <Button 
-                    as={Link}
-                    to="/profile/settings"
-                    variant="light" 
-                    size="sm"
-                    startContent={<Icon icon="lucide:edit" />}
-                  >
-                    Edit
-                  </Button>
-                </div>
-                
-                <div className="flex items-center">
-                  <Icon icon="logos:visa" width={40} className="mr-4" />
-                  <div>
-                    <p className="font-medium">Visa ending in 4242</p>
-                    <p className="text-sm text-default-500">Expires 12/25</p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
+        </motion.div>
       </div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3 }}
+      >
+        <Card>
+          <CardBody className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Account Quick Links</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <Button 
+                as={Link}
+                to="/profile/orders"
+                variant="flat"
+                className="h-auto py-4 flex-col items-center justify-center"
+                fullWidth
+              >
+                <Icon icon="lucide:package" className="text-2xl mb-2" />
+                <span>My Orders</span>
+              </Button>
+              
+              <Button 
+                as={Link}
+                to="/favorites"
+                variant="flat"
+                className="h-auto py-4 flex-col items-center justify-center"
+                fullWidth
+              >
+                <Icon icon="lucide:heart" className="text-2xl mb-2" />
+                <span>Wishlist</span>
+              </Button>
+              
+              <Button 
+                as={Link}
+                to="/profile/addresses"
+                variant="flat"
+                className="h-auto py-4 flex-col items-center justify-center"
+                fullWidth
+              >
+                <Icon icon="lucide:map-pin" className="text-2xl mb-2" />
+                <span>Addresses</span>
+              </Button>
+              
+              <Button 
+                as={Link}
+                to="/profile/settings"
+                variant="flat"
+                className="h-auto py-4 flex-col items-center justify-center"
+                fullWidth
+              >
+                <Icon icon="lucide:settings" className="text-2xl mb-2" />
+                <span>Account Settings</span>
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      </motion.div>
     </div>
   );
 };
